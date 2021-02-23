@@ -1,7 +1,30 @@
-window.addEventListener('DOMContentLoaded', async function(event) {
-  let db = firebase.firestore()
+let db = firebase.firestore()
+
+firebase.auth().onAuthStateChanged(async function(user) {
+
+if (user) {
+  console.log("signed in")
+
+  db.collection("users").doc(user.uid).set({
+    name: user.displayName,
+    email: user.email
+  })
+  
+
+  //"Signed in as user name" + Sign-out button
+  document.querySelector(".sign-in-or-sign-out").innerHTML = `
+  <div class="">Signed in as ${user.displayName}</div>
+  <button class="text-pink-500 underline sign-out">Sign Out</button>
+  `
+  document.querySelector(".sign-out").addEventListener("click", function(event) {
+    console.log("sign out clicked")
+    firebase.auth().signOut()
+    document.location.href = "movies.html"
+  })
+  
+  
   let apiKey = 'your TMDB API key'
-  let response = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=en-US`)
+  let response = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=6a296237a812d2952b0bd4fe4c93d9d5&language=en-US`)
   let json = await response.json()
   let movies = json.results
   console.log(movies)
@@ -29,6 +52,23 @@ window.addEventListener('DOMContentLoaded', async function(event) {
       await db.collection('watched').doc(`${movie.id}`).set({})
     }) 
   }
+
+} else {
+  console.log("signed out")
+
+  let ui = new firebaseui.auth.AuthUI(firebase.auth())
+
+  let authUIConfig = {
+    signInOptions: [
+      firebase.auth.EmailAuthProvider.PROVIDER_ID
+    ],
+    signInSuccessUrl: "movies.html"
+  }
+
+  ui.start('.sign-in-or-sign-out', authUIConfig)
+
+}
+  
 })
 
 // Goal:   Refactor the movies application from last week, so that it supports
@@ -40,14 +80,19 @@ window.addEventListener('DOMContentLoaded', async function(event) {
 //         (provided) script tags for all necessary Firebase services – i.e. Firebase
 //         Auth, Firebase Cloud Firestore, and Firebase UI for Auth; also
 //         add the CSS file for FirebaseUI for Auth.
+
+// Done
+
 // Step 2: Change the main event listener from DOMContentLoaded to 
 //         firebase.auth().onAuthStateChanged and include conditional logic 
-//         shows a login UI when signed, and the list of movies when signed
+//         shows a login UI when signed out, and the list of movies when signed
 //         in. Use the provided .sign-in-or-sign-out element to show the
 //         login UI. If a user is signed-in, display a message like "Signed 
 //         in as <name>" along with a link to "Sign out". Ensure that a document
 //         is set in the "users" collection for each user that signs in to 
 //         your application.
+
+
 // Step 3: Setting the TMDB movie ID as the document ID on your "watched" collection
 //         will no longer work. The document ID should now be a combination of the
 //         TMDB movie ID and the user ID indicating which user has watched. 
