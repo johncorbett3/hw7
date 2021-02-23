@@ -9,9 +9,7 @@ if (user) {
     name: user.displayName,
     email: user.email
   })
-
-  
-  
+ 
   //"Signed in as user name" + Sign-out button
   document.querySelector(".sign-in-or-sign-out").innerHTML = `
   <div class="">Signed in as ${user.displayName}</div>
@@ -43,8 +41,6 @@ if (user) {
 
     
   // console.log(currentUserID)
-
-  
   // console.log(compositeID)
 
     document.querySelector('.movies').insertAdjacentHTML('beforeend', `
@@ -89,8 +85,6 @@ if (user) {
 //         (provided) script tags for all necessary Firebase services – i.e. Firebase
 //         Auth, Firebase Cloud Firestore, and Firebase UI for Auth; also
 //         add the CSS file for FirebaseUI for Auth.
-
-// Done
 
 // Step 2: Change the main event listener from DOMContentLoaded to 
 //         firebase.auth().onAuthStateChanged and include conditional logic 
